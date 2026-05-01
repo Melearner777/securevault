@@ -1,10 +1,10 @@
-# 🔐 SecureVault — Multi-Level Secure File Storage System
+# SecureVault — Multi-Level Secure File Storage System
 
 A **cybersecurity-focused** file storage web application built with **Spring Boot**, featuring dual-level authentication, AES file encryption, JWT-based sessions, and segregated databases/storage for normal and sensitive files.
 
 ---
 
-## 🧠 Concept
+## Concept
 
 This project demonstrates **Security Level Segregation** — a concept used in banking, military, and classified storage systems.
 
@@ -17,7 +17,7 @@ Even if one credential is compromised, the other level remains protected.
 
 ---
 
-## 🛡️ Security Features
+## Security Features
 
 - ✅ **Dual-level authentication** — two separate passwords grant different access levels
 - ✅ **AES-256 file encryption** — Level 2 files are encrypted at rest
@@ -29,7 +29,7 @@ Even if one credential is compromised, the other level remains protected.
 
 ---
 
-## 🏗️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -42,7 +42,7 @@ Even if one credential is compromised, the other level remains protected.
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 src/main/java/com/jishan/securevault/
@@ -57,7 +57,7 @@ src/main/java/com/jishan/securevault/
 
 ---
 
-## ⚙️ Setup & Run
+##  Setup & Run
 
 ### Prerequisites
 - Java 17+
@@ -91,7 +91,7 @@ src/main/java/com/jishan/securevault/
 
 ---
 
-## 🔑 How It Works
+## How It Works
 
 1. **Register** with a username and two passwords for different access levels
 2. **Login with Password 1** → access your normal files
@@ -102,7 +102,7 @@ src/main/java/com/jishan/securevault/
 
 
 
-## ⚠️ Disclaimer
+##  Disclaimer
 
 This project is built for educational purposes to demonstrate cybersecurity concepts. Do not use in production without a thorough security audit.
 
