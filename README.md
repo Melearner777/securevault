@@ -100,13 +100,7 @@ src/main/java/com/jishan/securevault/
 
 ---
 
-## 📸 Screenshots
 
-> Dashboard with file upload and access-level separation
-
-*(Add screenshots here)*
-
----
 
 ## ⚠️ Disclaimer
 
