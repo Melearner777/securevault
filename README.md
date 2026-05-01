@@ -106,8 +106,4 @@ src/main/java/com/jishan/securevault/
 
 This project is built for educational purposes to demonstrate cybersecurity concepts. Do not use in production without a thorough security audit.
 
----
 
-## 👨‍💻 Author
-
-**Jishan** — Java Developer & Cybersecurity Enthusiast
