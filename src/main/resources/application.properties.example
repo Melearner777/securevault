@@ -25,20 +25,3 @@ spring.servlet.multipart.max-request-size=50MB
 # Server Port
 # ──────────────────────────────────────────
 server.port=8080
-
-# ──────────────────────────────────────────
-# Gmail SMTP for 2FA OTP Emails
-# ──────────────────────────────────────────
-# STEP 1: Replace YOUR_GMAIL@gmail.com with your actual Gmail address
-# STEP 2: Replace YOUR_APP_PASSWORD with a Gmail App Password
-#         How to get App Password:
-#         Google Account → Security → 2-Step Verification → App Passwords → Create
-spring.mail.host=smtp.gmail.com
-spring.mail.port=587
-spring.mail.username=YOUR_GMAIL@gmail.com
-spring.mail.password=YOUR_APP_PASSWORD
-spring.mail.properties.mail.smtp.auth=true
-spring.mail.properties.mail.smtp.starttls.enable=true
-spring.mail.properties.mail.smtp.starttls.required=true
-spring.mail.test-connection=false
-

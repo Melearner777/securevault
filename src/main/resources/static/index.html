@@ -34,14 +34,27 @@
         .tab.active { color: #7c3aed; border-bottom: 2px solid #7c3aed; }
         .form-group { margin-bottom: 18px; }
         label { color: #ccc; font-size: 13px; display: block; margin-bottom: 6px; }
-        input {
+        input, select {
             width: 100%; padding: 12px 16px;
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 8px; color: #fff; font-size: 14px;
             outline: none; transition: border 0.3s;
         }
-        input:focus { border-color: #7c3aed; }
+        select {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(124,58,237,0.6);
+            color: #fff;
+        }
+        select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        select option:checked {
+            background: #000000;
+            color: #fff;
+        }
+        input:focus, select:focus { border-color: #7c3aed; }
         .btn {
             width: 100%; padding: 13px;
             background: linear-gradient(135deg, #7c3aed, #4f46e5);
@@ -56,28 +69,19 @@
         }
         .msg.success { background: rgba(16,185,129,0.2); color: #10b981; display: block; }
         .msg.error   { background: rgba(239,68,68,0.2);  color: #ef4444;  display: block; }
-        .level-badge {
-            display: inline-block; padding: 3px 10px; border-radius: 20px;
-            font-size: 11px; font-weight: bold; margin-left: 8px;
-        }
-        .level1 { background: rgba(59,130,246,0.2); color: #3b82f6; }
-        .level2 { background: rgba(239,68,68,0.2);  color: #ef4444; }
         .hidden { display: none; }
-        .otp-input {
-            letter-spacing: 8px; font-size: 22px; text-align: center;
-            font-weight: bold; color: #7c3aed;
-        }
-        .info-box {
-            background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3);
-            border-radius: 8px; padding: 12px; color: #c4b5fd; font-size: 13px;
-            margin-bottom: 16px; text-align: center;
+        .hint {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-top: 8px;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="logo">
-        <h1>🔐 SecureVault</h1>
+        <h1> SecureVault</h1>
         <p>Multi-Level Secure File Storage</p>
     </div>
 
@@ -90,50 +94,36 @@
     <!-- LOGIN FORM -->
     <div id="loginForm">
         <div class="form-group">
-            <label>Username</label>
+            <label for="loginUsername">Username</label>
             <input type="text" id="loginUsername" placeholder="Enter username">
         </div>
         <div class="form-group">
-            <label>Password</label>
+            <label for="loginPassword">Password</label>
             <input type="password" id="loginPassword" placeholder="Enter password">
         </div>
+        <div class="hint" id="loginHint">Use your account password to sign in.</div>
+
         <button class="btn" onclick="login()">Login</button>
         <div id="loginMsg" class="msg"></div>
-    </div>
-
-    <!-- OTP VERIFICATION FORM (shown when 2FA is required) -->
-    <div id="otpForm" class="hidden">
-        <div class="info-box">
-            📧 A 6-digit OTP has been sent to your registered email.<br>
-            It expires in <strong>5 minutes</strong>.
-        </div>
-        <div class="form-group">
-            <label>Enter OTP</label>
-            <input type="text" id="otpInput" class="otp-input" placeholder="000000" maxlength="6">
-        </div>
-        <button class="btn" onclick="verifyOtp()">Verify OTP</button>
-        <button class="btn" onclick="cancelOtp()"
-                style="background:rgba(255,255,255,0.08);margin-top:8px;">← Back to Login</button>
-        <div id="otpMsg" class="msg"></div>
     </div>
 
     <!-- REGISTER FORM -->
     <div id="registerForm" class="hidden">
         <div class="form-group">
-            <label>Username</label>
+            <label for="regUsername">Username</label>
             <input type="text" id="regUsername" placeholder="Choose a username">
         </div>
         <div class="form-group">
-            <label>Password 1</label>
-            <input type="password" id="regPassword1" placeholder="Password for normal files">
+            <label for="regPassword1">Password</label>
+            <input type="password" id="regPassword1" placeholder="Create your account password">
         </div>
         <div class="form-group">
-            <label>Password 2</label>
-            <input type="password" id="regPassword2" placeholder="Password for secure files">
+            <label for="regPassword2">Extra Password</label>
+            <input type="password" id="regPassword2" placeholder="Create your extra password">
         </div>
         <div class="form-group">
-            <label>Security Question</label>
-            <select id="regSecurityQuestion" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:14px;outline:none;">
+            <label for="regSecurityQuestion1">Security Question 1</label>
+            <select id="regSecurityQuestion1">
                 <option value="" style="background:#1a1a2e;">-- Select a question --</option>
                 <option value="What was the name of your first pet?" style="background:#1a1a2e;">What was the name of your first pet?</option>
                 <option value="What is your mother's maiden name?" style="background:#1a1a2e;">What is your mother's maiden name?</option>
@@ -143,13 +133,25 @@
             </select>
         </div>
         <div class="form-group">
-            <label>Security Answer</label>
-            <input type="text" id="regSecurityAnswer" placeholder="Your answer (case-insensitive)">
+            <label for="regSecurityAnswer1">Security Answer 1</label>
+            <input type="text" id="regSecurityAnswer1" placeholder="Your answer (case-insensitive)">
         </div>
         <div class="form-group">
-            <label>Email Address <span style="color:#7c3aed;font-size:11px;">(optional — required for 2FA)</span></label>
-            <input type="email" id="regEmail" placeholder="your@email.com">
+            <label for="regSecurityQuestion2">Security Question 2</label>
+            <select id="regSecurityQuestion2">
+                <option value="" style="background:#1a1a2e;">-- Select a question --</option>
+                <option value="What was the name of your first pet?" style="background:#1a1a2e;">What was the name of your first pet?</option>
+                <option value="What is your mother's maiden name?" style="background:#1a1a2e;">What is your mother's maiden name?</option>
+                <option value="What city were you born in?" style="background:#1a1a2e;">What city were you born in?</option>
+                <option value="What was the name of your primary school?" style="background:#1a1a2e;">What was the name of your primary school?</option>
+                <option value="What is your favourite movie?" style="background:#1a1a2e;">What is your favourite movie?</option>
+            </select>
         </div>
+        <div class="form-group">
+            <label for="regSecurityAnswer2">Security Answer 2</label>
+            <input type="text" id="regSecurityAnswer2" placeholder="Your answer (case-insensitive)">
+        </div>
+        <div class="hint">Use the two security questions to recover your account credentials.</div>
         <button class="btn" onclick="register()">Register</button>
         <div id="registerMsg" class="msg"></div>
     </div>
@@ -157,35 +159,32 @@
     <!-- FORGOT PASSWORD FORM -->
     <div id="forgotForm" class="hidden">
         <div class="form-group">
-            <label>Username</label>
+            <label for="forgotUsername">Username</label>
             <input type="text" id="forgotUsername" placeholder="Enter your username">
             <button class="btn" onclick="loadQuestion()" style="margin-top:8px;padding:9px;">Get Security Question</button>
         </div>
         <div id="questionBox" class="hidden">
             <div class="form-group">
-                <label>Security Question</label>
-                <div id="questionText" style="color:#7c3aed;font-size:14px;padding:10px 0;"></div>
+                <label for="recoveryQuestion">Security Question</label>
+                <select id="recoveryQuestion"></select>
             </div>
             <div class="form-group">
-                <label>Your Answer</label>
+                <label for="forgotAnswer">Your Answer</label>
                 <input type="text" id="forgotAnswer" placeholder="Enter your answer">
             </div>
             <div class="form-group">
-                <label>New Password</label>
-                <input type="password" id="forgotNewPassword" placeholder="Set a new password">
+                <label for="forgotNewPassword">New Access Code</label>
+                <input type="password" id="forgotNewPassword" placeholder="Set a new access code">
             </div>
-            <button class="btn" onclick="resetPassword()">Reset Password</button>
+            <button class="btn" onclick="recoverByQuestion()">Recover Account</button>
         </div>
         <div id="forgotMsg" class="msg"></div>
     </div>
 </div>
 
 <script>
-    let pending2FAUsername = null;  // stores username while waiting for OTP
-
     function showTab(tab) {
         document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-        document.getElementById('otpForm').classList.add('hidden');
         document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
         document.getElementById('forgotForm').classList.toggle('hidden', tab !== 'forgot');
         document.querySelectorAll('.tab').forEach((t, i) => {
@@ -214,21 +213,6 @@
             });
             const result = await res.text();
 
-            if (result.startsWith('2FA_REQUIRED:')) {
-                // 2FA is active — show OTP verification form
-                pending2FAUsername = result.split(':')[1];
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('otpForm').classList.remove('hidden');
-                document.getElementById('otpInput').value = '';
-                document.getElementById('otpMsg').className = 'msg';
-                return;
-            }
-
-            if (result.startsWith('EMAIL_ERROR')) {
-                showMsg(msg, '⚠️ 2FA is enabled but email could not be sent. Check server mail settings in application.properties.', 'error');
-                return;
-            }
-
             if (result.startsWith('ey')) {
                 localStorage.setItem('token', result);
                 const payload = JSON.parse(atob(result.split('.')[1]));
@@ -244,66 +228,25 @@
         }
     }
 
-    async function verifyOtp() {
-        const otp = document.getElementById('otpInput').value.trim();
-        const msg = document.getElementById('otpMsg');
-
-        if (!otp || otp.length !== 6) {
-            showMsg(msg, 'Please enter the 6-digit OTP', 'error'); return;
-        }
-
-        try {
-            const res = await fetch('/auth/verify-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: pending2FAUsername, otp })
-            });
-            const result = await res.text();
-
-            if (result.startsWith('ey')) {
-                localStorage.setItem('token', result);
-                const payload = JSON.parse(atob(result.split('.')[1]));
-                localStorage.setItem('accessLevel', payload.accessLevel);
-                localStorage.setItem('username', pending2FAUsername);
-                pending2FAUsername = null;
-                showMsg(msg, '✅ OTP verified! Redirecting...', 'success');
-                setTimeout(() => window.location.href = '/dashboard.html', 1000);
-            } else {
-                showMsg(msg, '❌ ' + result, 'error');
-            }
-        } catch (e) {
-            showMsg(msg, 'Connection error', 'error');
-        }
-    }
-
-    function cancelOtp() {
-        pending2FAUsername = null;
-        document.getElementById('otpForm').classList.add('hidden');
-        document.getElementById('loginForm').classList.remove('hidden');
-        document.getElementById('loginMsg').className = 'msg';
-    }
-
     async function register() {
-        const username         = document.getElementById('regUsername').value.trim();
-        const password1        = document.getElementById('regPassword1').value.trim();
-        const password2        = document.getElementById('regPassword2').value.trim();
-        const securityQuestion = document.getElementById('regSecurityQuestion').value;
-        const securityAnswer   = document.getElementById('regSecurityAnswer').value.trim();
-        const email            = document.getElementById('regEmail').value.trim();
+        const username = document.getElementById('regUsername').value.trim();
+        const password1 = document.getElementById('regPassword1').value.trim();
+        const password2 = document.getElementById('regPassword2').value.trim();
+        const securityQuestion1 = document.getElementById('regSecurityQuestion1').value;
+        const securityAnswer1 = document.getElementById('regSecurityAnswer1').value.trim();
+        const securityQuestion2 = document.getElementById('regSecurityQuestion2').value;
+        const securityAnswer2 = document.getElementById('regSecurityAnswer2').value.trim();
         const msg = document.getElementById('registerMsg');
 
-        if (!username || !password1 || !password2 || !securityQuestion || !securityAnswer) {
-            showMsg(msg, 'Please fill in all fields including security question', 'error'); return;
-        }
-        if (password1 === password2) {
-            showMsg(msg, 'Password 1 and Password 2 must be different', 'error'); return;
+        if (!username || !password1 || !password2 || !securityQuestion1 || !securityAnswer1 || !securityQuestion2 || !securityAnswer2) {
+            showMsg(msg, 'Please fill in all fields including both security questions', 'error'); return;
         }
 
         try {
             const res = await fetch('/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password1, password2, securityQuestion, securityAnswer, email })
+                body: JSON.stringify({ username, password1, password2, securityQuestion1, securityAnswer1, securityQuestion2, securityAnswer2 })
             });
             const result = await res.text();
             if (result.includes('successfully')) {
@@ -318,25 +261,23 @@
 
     async function loadQuestion() {
         const username = document.getElementById('forgotUsername').value.trim();
-        const msg      = document.getElementById('forgotMsg');
+        const msg = document.getElementById('forgotMsg');
         if (!username) { showMsg(msg, 'Enter your username first', 'error'); return; }
 
         try {
-            const res      = await fetch('/auth/security-question?username=' + encodeURIComponent(username));
-            const question = await res.text();
-
-            if (question === 'USER_NOT_FOUND') {
+            const res = await fetch('/auth/security-questions?username=' + encodeURIComponent(username));
+            if (!res.ok) {
                 showMsg(msg, '❌ No account found with that username.', 'error');
                 document.getElementById('questionBox').classList.add('hidden');
                 return;
             }
-            if (question === 'NO_SECURITY_QUESTION') {
-                showMsg(msg, '⚠️ This account has no security question. Please contact admin.', 'error');
-                document.getElementById('questionBox').classList.add('hidden');
-                return;
-            }
 
-            document.getElementById('questionText').textContent = '❓ ' + question;
+            const data = await res.json();
+            const select = document.getElementById('recoveryQuestion');
+            select.innerHTML = `
+                <option value="securityQuestion1">${data.securityQuestion1 || 'Not set'}</option>
+                <option value="securityQuestion2">${data.securityQuestion2 || 'Not set'}</option>
+            `;
             document.getElementById('questionBox').classList.remove('hidden');
             msg.className = 'msg';
         } catch (e) {
@@ -344,21 +285,22 @@
         }
     }
 
-    async function resetPassword() {
-        const username    = document.getElementById('forgotUsername').value.trim();
-        const answer      = document.getElementById('forgotAnswer').value.trim();
+    async function recoverByQuestion() {
+        const username = document.getElementById('forgotUsername').value.trim();
+        const questionKey = document.getElementById('recoveryQuestion').value;
+        const answer = document.getElementById('forgotAnswer').value.trim();
         const newPassword = document.getElementById('forgotNewPassword').value.trim();
         const msg = document.getElementById('forgotMsg');
 
-        if (!answer || !newPassword) {
-            showMsg(msg, 'Please fill in all fields', 'error'); return;
+        if (!username || !questionKey || !answer || !newPassword) {
+            showMsg(msg, 'Please complete all recovery fields', 'error'); return;
         }
 
         try {
-            const res = await fetch('/auth/reset-password', {
+            const res = await fetch('/auth/recover-by-question', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, securityAnswer: answer, newPassword })
+                body: JSON.stringify({ username, questionKey, securityAnswer: answer, newPassword })
             });
             const result = await res.text();
             if (result.includes('successful')) {
@@ -372,7 +314,6 @@
             showMsg(msg, 'Connection error', 'error');
         }
     }
-
 
     function showMsg(el, text, type) {
         el.textContent = text;

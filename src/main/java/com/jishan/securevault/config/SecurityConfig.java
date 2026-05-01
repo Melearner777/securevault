@@ -32,9 +32,11 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/", "/index.html", "/dashboard.html",
                     "/*.html", "/*.css", "/*.js",
-                    "/auth/register", "/auth/login",
-                    "/auth/verify-otp",
-                    "/auth/security-question", "/auth/reset-password"
+                    "/auth/register", "/auth/login", "/auth/login-password2",
+                    "/auth/security-question", "/auth/security-questions",
+                    "/auth/reset-password", "/auth/reset-password1", "/auth/reset-password2",
+                    "/auth/recover-by-question",
+                    "/auth/unlock-secure"
                 ).permitAll()
                 // All other routes — token required
                 .anyRequest().authenticated()

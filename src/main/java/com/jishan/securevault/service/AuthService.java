@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AuthService {
@@ -18,53 +20,104 @@ public class AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private TwoFactorService twoFactorService;
-
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    // Register new user with two passwords + security question + optional email for 2FA
-    public String register(String username, String password1, String password2,
-                           String securityQuestion, String securityAnswer, String email) {
+    // Register new user with password 1, password 2, and two security questions.
+    public String register(String username, String password1,
+                           String password2,
+                           String securityQuestion1, String securityAnswer1,
+                           String securityQuestion2, String securityAnswer2) {
+        if (username == null || username.isBlank() ||
+            password1 == null || password1.isBlank() ||
+            password2 == null || password2.isBlank()) {
+            return "Username and password1 are required";
+        }
         if (userRepository.findByUsername(username).isPresent()) {
             return "Username already exists";
         }
-        if (securityQuestion == null || securityQuestion.isBlank() ||
-            securityAnswer   == null || securityAnswer.isBlank()) {
-            return "Security question and answer are required";
+        if (securityQuestion1 == null || securityQuestion1.isBlank() ||
+            securityAnswer1   == null || securityAnswer1.isBlank() ||
+            securityQuestion2 == null || securityQuestion2.isBlank() ||
+            securityAnswer2   == null || securityAnswer2.isBlank()) {
+            return "Both security questions and answers are required";
         }
+
         User user = new User();
         user.setUsername(username);
         user.setPasswordLevel1(encoder.encode(password1));
         user.setPasswordLevel2(encoder.encode(password2));
-        user.setSecurityQuestion(securityQuestion);
-        user.setSecurityAnswer(encoder.encode(securityAnswer.trim().toLowerCase()));
+        user.setSecurityQuestion(securityQuestion1);
+        user.setSecurityAnswer(encoder.encode(securityAnswer1.trim().toLowerCase()));
+        user.setSecurityQuestion1(securityQuestion1);
+        user.setSecurityAnswer1(encoder.encode(securityAnswer1.trim().toLowerCase()));
+        user.setSecurityQuestion2(securityQuestion2);
+        user.setSecurityAnswer2(encoder.encode(securityAnswer2.trim().toLowerCase()));
         user.setFailedAttempts(0);
         user.setLocked(false);
-        if (email != null && !email.isBlank()) {
-            user.setEmail(email.trim().toLowerCase());
-        }
         userRepository.save(user);
         return "User registered successfully";
     }
 
-    // Get security question for a username (safe — does not expose answer)
-    public String getSecurityQuestion(String username) {
+    // Get both security questions for a username (safe — does not expose answers)
+    public Map<String, String> getSecurityQuestions(String username) {
         Optional<User> opt = userRepository.findByUsername(username);
-        if (opt.isEmpty()) return "USER_NOT_FOUND";
-        String question = opt.get().getSecurityQuestion();
-        if (question == null || question.isBlank()) return "NO_SECURITY_QUESTION";
-        return question;
+        if (opt.isEmpty()) return null;
+
+        User user = opt.get();
+        Map<String, String> questions = new HashMap<>();
+        questions.put("securityQuestion1", firstNonBlank(user.getSecurityQuestion1(), user.getSecurityQuestion()));
+        questions.put("securityQuestion2", firstNonBlank(user.getSecurityQuestion2(), user.getSecurityQuestion()));
+        return questions;
     }
 
-    // Reset password1 only — after verifying security answer
+    // Return whether password2 already exists for this user.
+    public String getPassword2Status(String username) {
+        Optional<User> opt = userRepository.findByUsername(username);
+        if (opt.isEmpty()) return "USER_NOT_FOUND";
+        return (opt.get().getPasswordLevel2() == null || opt.get().getPasswordLevel2().isBlank())
+                ? "NOT_SET"
+                : "SET";
+    }
+
+    // Set password2 after password1 login.
+    public String setupPassword2(String username, String password2) {
+        if (username == null || username.isBlank() || password2 == null || password2.isBlank()) {
+            return "Username and password2 are required";
+        }
+
+        Optional<User> opt = userRepository.findByUsername(username);
+        if (opt.isEmpty()) return "User not found";
+
+        User user = opt.get();
+        if (user.getPasswordLevel2() != null && !user.getPasswordLevel2().isBlank()) {
+            return "Password 2 already exists";
+        }
+
+        user.setPasswordLevel2(encoder.encode(password2));
+        userRepository.save(user);
+        return jwtUtil.generateToken(username, "LEVEL2");
+    }
+
+    // Reset password1 only — after verifying security answer 1
     public String resetPassword(String username, String securityAnswer, String newPassword1) {
+        return resetPassword1(username, securityAnswer, newPassword1);
+    }
+
+    // Reset password1 after verifying security answer 1.
+    public String resetPassword1(String username, String securityAnswer, String newPassword1) {
+        if (username == null || username.isBlank() ||
+            securityAnswer == null || securityAnswer.isBlank() ||
+            newPassword1 == null || newPassword1.isBlank()) {
+            return "Username, security answer, and new password are required";
+        }
+
         Optional<User> opt = userRepository.findByUsername(username);
         if (opt.isEmpty()) return "User not found";
 
         User user = opt.get();
 
-        if (!encoder.matches(securityAnswer.trim().toLowerCase(), user.getSecurityAnswer())) {
+        String storedAnswer = firstNonBlank(user.getSecurityAnswer1(), user.getSecurityAnswer());
+        if (storedAnswer == null || !encoder.matches(securityAnswer.trim().toLowerCase(), storedAnswer)) {
             return "Security answer is incorrect";
         }
 
@@ -75,9 +128,87 @@ public class AuthService {
         return "Password reset successful. You can now login with your new password.";
     }
 
-    // Login — checks level2 first, then level1
-    // If 2FA enabled → sends OTP and returns "2FA_REQUIRED:<username>"
+    // Reset password2 after verifying security answer 2.
+    public String resetPassword2(String username, String securityAnswer, String newPassword2) {
+        if (username == null || username.isBlank() ||
+            securityAnswer == null || securityAnswer.isBlank() ||
+            newPassword2 == null || newPassword2.isBlank()) {
+            return "Username, security answer, and new password are required";
+        }
+
+        Optional<User> opt = userRepository.findByUsername(username);
+        if (opt.isEmpty()) return "User not found";
+
+        User user = opt.get();
+
+        String storedAnswer = firstNonBlank(user.getSecurityAnswer2(), user.getSecurityAnswer());
+        if (storedAnswer == null || !encoder.matches(securityAnswer.trim().toLowerCase(), storedAnswer)) {
+            return "Security answer is incorrect";
+        }
+
+        user.setPasswordLevel2(encoder.encode(newPassword2));
+        user.setFailedAttempts(0);
+        user.setLocked(false);
+        userRepository.save(user);
+        return "Password reset successful. You can now login with your new password.";
+    }
+
+    // Recover the matching stored password based on the selected security question.
+    public String recoverByQuestion(String username, String questionKey, String securityAnswer, String newPassword) {
+        if (username == null || username.isBlank() ||
+            questionKey == null || questionKey.isBlank() ||
+            securityAnswer == null || securityAnswer.isBlank() ||
+            newPassword == null || newPassword.isBlank()) {
+            return "Username, security question, security answer, and new password are required";
+        }
+
+        Optional<User> opt = userRepository.findByUsername(username);
+        if (opt.isEmpty()) return "User not found";
+
+        User user = opt.get();
+        String key = questionKey.trim();
+        String question = null;
+        String storedAnswer = null;
+        boolean resetLevel1 = false;
+
+        if ("securityQuestion1".equals(key)) {
+            question = firstNonBlank(user.getSecurityQuestion1(), user.getSecurityQuestion());
+            storedAnswer = firstNonBlank(user.getSecurityAnswer1(), user.getSecurityAnswer());
+            resetLevel1 = true;
+        } else if ("securityQuestion2".equals(key)) {
+            question = firstNonBlank(user.getSecurityQuestion2(), user.getSecurityQuestion());
+            storedAnswer = firstNonBlank(user.getSecurityAnswer2(), user.getSecurityAnswer());
+            resetLevel1 = false;
+        } else {
+            return "Invalid security question selection";
+        }
+
+        if (question == null || storedAnswer == null) {
+            return "Security question is not set for this account";
+        }
+
+        if (!encoder.matches(securityAnswer.trim().toLowerCase(), storedAnswer)) {
+            return "Security answer is incorrect";
+        }
+
+        if (resetLevel1) {
+            user.setPasswordLevel1(encoder.encode(newPassword));
+        } else {
+            user.setPasswordLevel2(encoder.encode(newPassword));
+        }
+
+        user.setFailedAttempts(0);
+        user.setLocked(false);
+        userRepository.save(user);
+        return "Password reset successful. You can now login with your new password.";
+    }
+
+    // Login — automatically detects which stored password matches and returns the correct token.
     public String login(String username, String password) {
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return "Username and password are required";
+        }
+
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
         if (optionalUser.isEmpty()) {
@@ -90,99 +221,79 @@ public class AuthService {
             return "Account is locked due to too many failed attempts";
         }
 
-        String matchedLevel = null;
-
-        // Level 2 → Secure Vault access
-        if (encoder.matches(password, user.getPasswordLevel2())) {
-            matchedLevel = "LEVEL2";
-        }
-        // Level 1 → Normal access
-        else if (encoder.matches(password, user.getPasswordLevel1())) {
-            matchedLevel = "LEVEL1";
+        if (user.getPasswordLevel2() != null && !user.getPasswordLevel2().isBlank() && encoder.matches(password, user.getPasswordLevel2())) {
+            resetFailedAttempts(user);
+            return jwtUtil.generateToken(username, "LEVEL2");
         }
 
-        if (matchedLevel == null) {
+        if (encoder.matches(password, user.getPasswordLevel1())) {
+            resetFailedAttempts(user);
+            return jwtUtil.generateToken(username, "LEVEL1");
+        }
+
+        handleFailedAttempt(user);
+        return "Invalid credentials. Attempts left: " + (5 - user.getFailedAttempts());
+    }
+
+
+    // Password 2 unlock — for users who already created password2 after login.
+    public String unlockSecureVault(String username, String password2) {
+        if (username == null || username.isBlank() || password2 == null || password2.isBlank()) {
+            return "Username and password2 are required";
+        }
+
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+
+        if (optionalUser.isEmpty()) {
+            return "User not found";
+        }
+
+        User user = optionalUser.get();
+
+        if (user.isLocked()) {
+            return "Account is locked due to too many failed attempts";
+        }
+
+        if (user.getPasswordLevel2() == null || user.getPasswordLevel2().isBlank()) {
+            return "Password 2 is not set yet";
+        }
+
+        if (!encoder.matches(password2, user.getPasswordLevel2())) {
             handleFailedAttempt(user);
-            return "Invalid credentials. Attempts left: " + (5 - user.getFailedAttempts());
+            return "Invalid secure password. Attempts left: " + (5 - user.getFailedAttempts());
         }
 
         resetFailedAttempts(user);
+        return jwtUtil.generateToken(username, "LEVEL2");
+    }
 
-        // ── 2FA check ───────────────────────────────────────────
-        if (user.isTwoFactorEnabled()) {
-            if (user.getEmail() == null || user.getEmail().isBlank()) {
-                // 2FA enabled but no email — fallback to direct login
-                return jwtUtil.generateToken(username, matchedLevel);
-            }
-            user.setPendingAccessLevel(matchedLevel);
-            userRepository.save(user);
-            boolean sent = twoFactorService.sendOtp(user);
-            if (!sent) {
-                return "EMAIL_ERROR: Failed to send OTP. Check server mail configuration.";
-            }
-            return "2FA_REQUIRED:" + username;
+    // Password 2 direct login from main login page — returns a LEVEL2 token.
+    public String loginWithPassword2(String username, String password2) {
+        if (username == null || username.isBlank() || password2 == null || password2.isBlank()) {
+            return "Username and password2 are required";
         }
 
-        return jwtUtil.generateToken(username, matchedLevel);
-    }
-
-    // Verify OTP and issue JWT if correct
-    public String verifyOtp(String username, String otp) {
-        Optional<User> opt = userRepository.findByUsername(username);
-        if (opt.isEmpty()) return "User not found";
-
-        User user = opt.get();
-        String pendingLevel = user.getPendingAccessLevel();
-
-        if (pendingLevel == null) {
-            return "No pending 2FA session. Please login again.";
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
+            return "User not found";
         }
 
-        if (!twoFactorService.verifyOtp(user, otp)) {
-            return "Invalid or expired OTP";
+        User user = optionalUser.get();
+        if (user.isLocked()) {
+            return "Account is locked due to too many failed attempts";
         }
 
-        return jwtUtil.generateToken(username, pendingLevel);
-    }
-
-    // Enable 2FA — user must have an email set
-    public String enable2FA(String username) {
-        Optional<User> opt = userRepository.findByUsername(username);
-        if (opt.isEmpty()) return "User not found";
-        User user = opt.get();
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            return "NO_EMAIL";
+        if (user.getPasswordLevel2() == null || user.getPasswordLevel2().isBlank()) {
+            return "Password 2 is not set yet";
         }
-        user.setTwoFactorEnabled(true);
-        userRepository.save(user);
-        return "2FA enabled successfully";
-    }
 
-    // Disable 2FA
-    public String disable2FA(String username) {
-        Optional<User> opt = userRepository.findByUsername(username);
-        if (opt.isEmpty()) return "User not found";
-        User user = opt.get();
-        user.setTwoFactorEnabled(false);
-        userRepository.save(user);
-        return "2FA disabled successfully";
-    }
+        if (!encoder.matches(password2, user.getPasswordLevel2())) {
+            handleFailedAttempt(user);
+            return "Invalid Password 2. Attempts left: " + (5 - user.getFailedAttempts());
+        }
 
-    // Update email for a logged-in user
-    public String updateEmail(String username, String newEmail) {
-        Optional<User> opt = userRepository.findByUsername(username);
-        if (opt.isEmpty()) return "User not found";
-        User user = opt.get();
-        user.setEmail(newEmail.trim().toLowerCase());
-        userRepository.save(user);
-        return "Email updated successfully";
-    }
-
-    // Get 2FA status
-    public boolean is2FAEnabled(String username) {
-        return userRepository.findByUsername(username)
-                .map(User::isTwoFactorEnabled)
-                .orElse(false);
+        resetFailedAttempts(user);
+        return jwtUtil.generateToken(username, "LEVEL2");
     }
 
     private void handleFailedAttempt(User user) {
@@ -199,5 +310,10 @@ public class AuthService {
         user.setLocked(false);
         userRepository.save(user);
     }
-}
 
+    private String firstNonBlank(String primary, String fallback) {
+        if (primary != null && !primary.isBlank()) return primary;
+        if (fallback != null && !fallback.isBlank()) return fallback;
+        return null;
+    }
+}

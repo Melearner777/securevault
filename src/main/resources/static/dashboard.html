@@ -21,12 +21,6 @@
         .navbar h1 { font-size: 20px; letter-spacing: 1px; }
         .navbar h1 span { color: #7c3aed; }
         .nav-right { display: flex; align-items: center; gap: 16px; }
-        .badge {
-            padding: 5px 14px; border-radius: 20px;
-            font-size: 12px; font-weight: bold;
-        }
-        .badge.level1 { background: rgba(59,130,246,0.2); color: #3b82f6; border: 1px solid #3b82f6; }
-        .badge.level2 { background: rgba(239,68,68,0.2);  color: #ef4444;  border: 1px solid #ef4444; }
         .logout-btn {
             padding: 7px 16px; background: transparent;
             border: 1px solid rgba(255,255,255,0.2);
@@ -85,11 +79,6 @@
         td { padding: 14px 16px; font-size: 13px; color: #ddd; border-bottom: 1px solid rgba(255,255,255,0.05); }
         tr:hover td { background: rgba(255,255,255,0.03); }
         .file-name { color: #fff; font-weight: 500; }
-        .enc-badge {
-            padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;
-        }
-        .enc-yes { background: rgba(239,68,68,0.2); color: #ef4444; }
-        .enc-no  { background: rgba(107,114,128,0.2); color: #9ca3af; }
         .download-btn {
             padding: 5px 14px; background: rgba(124,58,237,0.2);
             border: 1px solid rgba(124,58,237,0.4);
@@ -99,20 +88,6 @@
         .download-btn:hover { background: rgba(124,58,237,0.4); }
         .empty-state { text-align: center; padding: 40px; color: #555; }
         .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
-
-        /* 2FA TOGGLE */
-        .toggle-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .toggle-label { font-size: 14px; color: #ccc; }
-        .toggle-label small { display: block; color: #666; font-size: 12px; margin-top: 3px; }
-        .toggle-btn {
-            padding: 8px 22px; border: none; border-radius: 20px;
-            font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;
-        }
-        .toggle-btn.enable  { background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid #10b981; }
-        .toggle-btn.disable { background: rgba(239,68,68,0.2);  color: #ef4444;  border: 1px solid #ef4444; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .status-dot.on  { background: #10b981; }
-        .status-dot.off { background: #555; }
 
         /* MSG */
         .msg {
@@ -137,19 +112,6 @@
 <!-- MAIN -->
 <div class="main">
 
-    <!-- 2FA SETTINGS CARD -->
-    <div class="card">
-        <h2>🛡️ Two-Factor Authentication (2FA)</h2>
-        <div class="toggle-row">
-            <div class="toggle-label">
-                <span class="status-dot" id="2faStatusDot"></span>
-                Status: <strong id="2faStatusText">Loading...</strong>
-                <small>When enabled, a 6-digit OTP will be sent to your email on every login.</small>
-            </div>
-            <button class="toggle-btn" id="2faToggleBtn" onclick="toggle2FA()">...</button>
-        </div>
-        <div id="2faMsg" class="msg" style="margin-top:12px;"></div>
-    </div>
 
     <!-- UPLOAD CARD -->
     <div class="card">
@@ -171,7 +133,7 @@
         <h2>📂 Your Files</h2>
         <div id="fileTableContainer">
             <div class="empty-state">
-                <div class="icon">📭</div>
+                <div class="icon"></div>
                 <p>No files yet. Upload your first file above.</p>
             </div>
         </div>
@@ -180,79 +142,26 @@
 </div>
 
 <script>
-    const token = localStorage.getItem('token');
-    const accessLevel = localStorage.getItem('accessLevel');
+    let token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
 
     // Redirect to login if no token
     if (!token) window.location.href = '/index.html';
 
-    // Setup UI based on access level
-    window.onload = function () {
+    function refreshSessionUI() {
         document.getElementById('usernameDisplay').textContent = '👤 ' + username;
-        load2FAStatus();
+    }
+
+    window.onload = function () {
+        refreshSessionUI();
         loadFiles();
     };
-
-    // ── 2FA functions ─────────────────────────────────────────────
-    async function load2FAStatus() {
-        try {
-            const res = await fetch('/auth/2fa-status', {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            const enabled = await res.json();
-            update2FAUI(enabled);
-        } catch (e) {
-            console.error('Failed to load 2FA status', e);
-        }
-    }
-
-    function update2FAUI(enabled) {
-        const dot  = document.getElementById('2faStatusDot');
-        const text = document.getElementById('2faStatusText');
-        const btn  = document.getElementById('2faToggleBtn');
-        if (enabled) {
-            dot.className  = 'status-dot on';
-            text.textContent = 'Enabled ✅';
-            btn.textContent  = 'Disable 2FA';
-            btn.className    = 'toggle-btn disable';
-        } else {
-            dot.className  = 'status-dot off';
-            text.textContent = 'Disabled';
-            btn.textContent  = 'Enable 2FA';
-            btn.className    = 'toggle-btn enable';
-        }
-    }
-
-    async function toggle2FA() {
-        const msg = document.getElementById('2faMsg');
-        const isEnabled = document.getElementById('2faStatusText').textContent.includes('Enabled');
-        const endpoint = isEnabled ? '/auth/disable-2fa' : '/auth/enable-2fa';
-
-        try {
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            const result = await res.text();
-
-            if (result === 'NO_EMAIL') {
-                showMsg(msg, '⚠️ No email address on your account. Please register with an email to use 2FA.', 'error');
-                return;
-            }
-            showMsg(msg, result.includes('enabled') ? '✅ ' + result : '🔓 ' + result,
-                        result.includes('enabled') ? 'success' : 'error');
-            load2FAStatus();
-        } catch (e) {
-            showMsg(msg, 'Error: ' + e.message, 'error');
-        }
-    }
-    // ─────────────────────────────────────────────────────────────
 
     function fileSelected() {
         const file = document.getElementById('fileInput').files[0];
         document.getElementById('selectedFile').textContent = file ? '✅ ' + file.name : '';
     }
+
 
     async function uploadFile() {
         const fileInput = document.getElementById('fileInput');
@@ -300,7 +209,7 @@
         if (!files || files.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="icon">📭</div>
+                    <div class="icon"></div>
                     <p>No files yet. Upload your first file above.</p>
                 </div>`;
             return;
@@ -309,9 +218,6 @@
         let rows = files.map(f => `
             <tr>
                 <td class="file-name">📄 ${f.originalName}</td>
-                <td>${f.accessLevel === 'LEVEL2'
-                    ? '<span class="enc-badge enc-yes">🔒 Encrypted</span>'
-                    : '<span class="enc-badge enc-no">📄 Normal</span>'}</td>
                 <td>${new Date(f.uploadTime).toLocaleString()}</td>
                 <td>
                     <button class="download-btn" onclick="downloadFile(${f.id}, '${f.originalName}')">
@@ -326,7 +232,6 @@
                 <thead>
                     <tr>
                         <th>File Name</th>
-                        <th>Type</th>
                         <th>Uploaded</th>
                         <th>Action</th>
                     </tr>

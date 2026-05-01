@@ -1,7 +1,6 @@
 package com.jishan.securevault.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -17,7 +16,7 @@ public class User {
     @Column(nullable = false)
     private String passwordLevel1;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String passwordLevel2;
 
     private int failedAttempts;
@@ -29,21 +28,17 @@ public class User {
     @Column
     private String securityAnswer; // stored as BCrypt hash
 
-    // ── 2FA fields ──────────────────────────────────────
-    @Column(unique = true)
-    private String email;
-
-    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean twoFactorEnabled = false;
+    @Column
+    private String securityQuestion1;
 
     @Column
-    private String twoFactorOtp;          // 6-digit OTP (plain, short-lived)
+    private String securityAnswer1;
 
     @Column
-    private LocalDateTime otpExpiry;      // OTP valid for 5 minutes
+    private String securityQuestion2;
 
     @Column
-    private String pendingAccessLevel;    // LEVEL1 or LEVEL2 — stored while OTP pending
+    private String securityAnswer2;
 
     // ── Getters & Setters ────────────────────────────────
 
@@ -71,18 +66,15 @@ public class User {
     public String getSecurityAnswer() { return securityAnswer; }
     public void setSecurityAnswer(String securityAnswer) { this.securityAnswer = securityAnswer; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getSecurityQuestion1() { return securityQuestion1; }
+    public void setSecurityQuestion1(String securityQuestion1) { this.securityQuestion1 = securityQuestion1; }
 
-    public boolean isTwoFactorEnabled() { return twoFactorEnabled; }
-    public void setTwoFactorEnabled(boolean twoFactorEnabled) { this.twoFactorEnabled = twoFactorEnabled; }
+    public String getSecurityAnswer1() { return securityAnswer1; }
+    public void setSecurityAnswer1(String securityAnswer1) { this.securityAnswer1 = securityAnswer1; }
 
-    public String getTwoFactorOtp() { return twoFactorOtp; }
-    public void setTwoFactorOtp(String twoFactorOtp) { this.twoFactorOtp = twoFactorOtp; }
+    public String getSecurityQuestion2() { return securityQuestion2; }
+    public void setSecurityQuestion2(String securityQuestion2) { this.securityQuestion2 = securityQuestion2; }
 
-    public LocalDateTime getOtpExpiry() { return otpExpiry; }
-    public void setOtpExpiry(LocalDateTime otpExpiry) { this.otpExpiry = otpExpiry; }
-
-    public String getPendingAccessLevel() { return pendingAccessLevel; }
-    public void setPendingAccessLevel(String pendingAccessLevel) { this.pendingAccessLevel = pendingAccessLevel; }
+    public String getSecurityAnswer2() { return securityAnswer2; }
+    public void setSecurityAnswer2(String securityAnswer2) { this.securityAnswer2 = securityAnswer2; }
 }

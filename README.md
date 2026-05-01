@@ -1,6 +1,6 @@
 # 🔐 SecureVault — Multi-Level Secure File Storage System
 
-A **cybersecurity-focused** file storage web application built with **Spring Boot**, featuring dual-level authentication, AES file encryption, JWT-based sessions, 2FA via email OTP, and segregated databases for normal and sensitive files.
+A **cybersecurity-focused** file storage web application built with **Spring Boot**, featuring dual-level authentication, AES file encryption, JWT-based sessions, and segregated databases/storage for normal and sensitive files.
 
 ---
 
@@ -23,7 +23,6 @@ Even if one credential is compromised, the other level remains protected.
 - ✅ **AES-256 file encryption** — Level 2 files are encrypted at rest
 - ✅ **JWT authentication** — stateless, secure session management
 - ✅ **BCrypt password hashing** — passwords never stored in plain text
-- ✅ **Two-Factor Authentication (2FA)** — email OTP on login
 - ✅ **Brute-force protection** — account lock after failed attempts
 - ✅ **Segregated file storage** — `/storage/normal/` and `/storage/secure/`
 - ✅ **Security logging** — all actions tracked
@@ -39,7 +38,6 @@ Even if one credential is compromised, the other level remains protected.
 | Database | MySQL |
 | Encryption | AES-256 |
 | Password Hashing | BCrypt |
-| Email / 2FA | JavaMail (Gmail SMTP) |
 | Frontend | HTML, CSS, JavaScript |
 
 ---
@@ -53,7 +51,7 @@ src/main/java/com/jishan/securevault/
 ├── entity/          # JPA entities (User, FileMetadata)
 ├── repository/      # Spring Data JPA repositories
 ├── security/        # JWT filter, UserDetailsService
-├── service/         # Business logic (Auth, File, Encryption, 2FA)
+├── service/         # Business logic (Auth, File, Encryption)
 └── util/            # Utility classes
 ```
 
@@ -80,7 +78,6 @@ src/main/java/com/jishan/securevault/
    ```
    Then edit `application.properties` and fill in:
    - Your MySQL password
-   - Your Gmail address and App Password (for 2FA OTP)
 
 3. **Run the application**
    ```bash
@@ -96,17 +93,16 @@ src/main/java/com/jishan/securevault/
 
 ## 🔑 How It Works
 
-1. **Register** with a username, email, password (Level 1), and optionally a second password (Level 2)
+1. **Register** with a username and two passwords for different access levels
 2. **Login with Password 1** → access your normal files
 3. **Login with Password 2** → access your encrypted secure vault
-4. **Enable 2FA** in the dashboard → OTP sent to your email on every login
-5. **Upload files** → Level 2 files are automatically AES-encrypted before storage
+4. **Upload files** → Level 2 files are automatically AES-encrypted before storage
 
 ---
 
 ## 📸 Screenshots
 
-> Dashboard with file upload and 2FA management
+> Dashboard with file upload and access-level separation
 
 *(Add screenshots here)*
 
@@ -121,4 +117,3 @@ This project is built for educational purposes to demonstrate cybersecurity conc
 ## 👨‍💻 Author
 
 **Jishan** — Java Developer & Cybersecurity Enthusiast
-
