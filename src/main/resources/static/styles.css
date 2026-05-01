@@ -1,0 +1,77 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.container {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 40px;
+    width: 400px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.logo { text-align: center; margin-bottom: 30px; }
+.logo h1 { color: #fff; font-size: 28px; letter-spacing: 2px; }
+.logo p { color: #aaa; font-size: 13px; margin-top: 6px; }
+.tabs { display: flex; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.tab {
+    flex: 1; padding: 10px; text-align: center; cursor: pointer;
+    color: #aaa; font-size: 14px; border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+}
+.tab.active { color: #7c3aed; border-bottom: 2px solid #7c3aed; }
+.form-group { margin-bottom: 18px; }
+label { color: #ccc; font-size: 13px; display: block; margin-bottom: 6px; }
+input, select {
+    width: 100%; padding: 12px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px; color: #fff; font-size: 14px;
+    outline: none; transition: border 0.3s;
+}
+select {
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(124,58,237,0.6);
+    color: #fff;
+}
+select option {
+    background: #1a1a2e;
+    color: #fff;
+}
+select option:checked {
+    background: #000000;
+    color: #fff;
+}
+input:focus, select:focus { border-color: #7c3aed; }
+.btn {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    border: none; border-radius: 8px; color: #fff;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: opacity 0.3s; margin-top: 8px;
+}
+.btn:hover { opacity: 0.85; }
+.btn.compact {
+    margin-top: 8px;
+    padding: 9px;
+}
+.msg {
+    margin-top: 16px; padding: 12px; border-radius: 8px;
+    font-size: 13px; text-align: center; display: none;
+}
+.msg.success { background: rgba(16,185,129,0.2); color: #10b981; display: block; }
+.msg.error   { background: rgba(239,68,68,0.2);  color: #ef4444;  display: block; }
+.hidden { display: none; }
+.hint {
+    color: #9ca3af;
+    font-size: 12px;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+

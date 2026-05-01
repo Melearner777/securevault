@@ -3,80 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>SecureVault - Login</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 40px;
-            width: 400px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        .logo { text-align: center; margin-bottom: 30px; }
-        .logo h1 { color: #fff; font-size: 28px; letter-spacing: 2px; }
-        .logo p { color: #aaa; font-size: 13px; margin-top: 6px; }
-        .tabs { display: flex; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .tab {
-            flex: 1; padding: 10px; text-align: center; cursor: pointer;
-            color: #aaa; font-size: 14px; border-bottom: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        .tab.active { color: #7c3aed; border-bottom: 2px solid #7c3aed; }
-        .form-group { margin-bottom: 18px; }
-        label { color: #ccc; font-size: 13px; display: block; margin-bottom: 6px; }
-        input, select {
-            width: 100%; padding: 12px 16px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 8px; color: #fff; font-size: 14px;
-            outline: none; transition: border 0.3s;
-        }
-        select {
-            background: rgba(255,255,255,0.15);
-            border: 2px solid rgba(124,58,237,0.6);
-            color: #fff;
-        }
-        select option {
-            background: #1a1a2e;
-            color: #fff;
-        }
-        select option:checked {
-            background: #000000;
-            color: #fff;
-        }
-        input:focus, select:focus { border-color: #7c3aed; }
-        .btn {
-            width: 100%; padding: 13px;
-            background: linear-gradient(135deg, #7c3aed, #4f46e5);
-            border: none; border-radius: 8px; color: #fff;
-            font-size: 15px; font-weight: 600; cursor: pointer;
-            transition: opacity 0.3s; margin-top: 8px;
-        }
-        .btn:hover { opacity: 0.85; }
-        .msg {
-            margin-top: 16px; padding: 12px; border-radius: 8px;
-            font-size: 13px; text-align: center; display: none;
-        }
-        .msg.success { background: rgba(16,185,129,0.2); color: #10b981; display: block; }
-        .msg.error   { background: rgba(239,68,68,0.2);  color: #ef4444;  display: block; }
-        .hidden { display: none; }
-        .hint {
-            color: #9ca3af;
-            font-size: 12px;
-            margin-top: 8px;
-            line-height: 1.5;
-        }
-    </style>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <div class="container">
@@ -124,12 +51,12 @@
         <div class="form-group">
             <label for="regSecurityQuestion1">Security Question 1</label>
             <select id="regSecurityQuestion1">
-                <option value="" style="background:#1a1a2e;">-- Select a question --</option>
-                <option value="What was the name of your first pet?" style="background:#1a1a2e;">What was the name of your first pet?</option>
-                <option value="What is your mother's maiden name?" style="background:#1a1a2e;">What is your mother's maiden name?</option>
-                <option value="What city were you born in?" style="background:#1a1a2e;">What city were you born in?</option>
-                <option value="What was the name of your primary school?" style="background:#1a1a2e;">What was the name of your primary school?</option>
-                <option value="What is your favourite movie?" style="background:#1a1a2e;">What is your favourite movie?</option>
+                <option value="">-- Select a question --</option>
+                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                <option value="What city were you born in?">What city were you born in?</option>
+                <option value="What was the name of your primary school?">What was the name of your primary school?</option>
+                <option value="What is your favourite movie?">What is your favourite movie?</option>
             </select>
         </div>
         <div class="form-group">
@@ -139,12 +66,12 @@
         <div class="form-group">
             <label for="regSecurityQuestion2">Security Question 2</label>
             <select id="regSecurityQuestion2">
-                <option value="" style="background:#1a1a2e;">-- Select a question --</option>
-                <option value="What was the name of your first pet?" style="background:#1a1a2e;">What was the name of your first pet?</option>
-                <option value="What is your mother's maiden name?" style="background:#1a1a2e;">What is your mother's maiden name?</option>
-                <option value="What city were you born in?" style="background:#1a1a2e;">What city were you born in?</option>
-                <option value="What was the name of your primary school?" style="background:#1a1a2e;">What was the name of your primary school?</option>
-                <option value="What is your favourite movie?" style="background:#1a1a2e;">What is your favourite movie?</option>
+                <option value="">-- Select a question --</option>
+                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                <option value="What city were you born in?">What city were you born in?</option>
+                <option value="What was the name of your primary school?">What was the name of your primary school?</option>
+                <option value="What is your favourite movie?">What is your favourite movie?</option>
             </select>
         </div>
         <div class="form-group">
@@ -161,7 +88,7 @@
         <div class="form-group">
             <label for="forgotUsername">Username</label>
             <input type="text" id="forgotUsername" placeholder="Enter your username">
-            <button class="btn" onclick="loadQuestion()" style="margin-top:8px;padding:9px;">Get Security Question</button>
+            <button class="btn compact" onclick="loadQuestion()">Get Security Question</button>
         </div>
         <div id="questionBox" class="hidden">
             <div class="form-group">
@@ -182,144 +109,7 @@
     </div>
 </div>
 
-<script>
-    function showTab(tab) {
-        document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-        document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-        document.getElementById('forgotForm').classList.toggle('hidden', tab !== 'forgot');
-        document.querySelectorAll('.tab').forEach((t, i) => {
-            t.classList.toggle('active',
-                (tab === 'login'    && i === 0) ||
-                (tab === 'register' && i === 1) ||
-                (tab === 'forgot'   && i === 2)
-            );
-        });
-    }
-
-    async function login() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
-        const msg = document.getElementById('loginMsg');
-
-        if (!username || !password) {
-            showMsg(msg, 'Please fill in all fields', 'error'); return;
-        }
-
-        try {
-            const res = await fetch('/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const result = await res.text();
-
-            if (result.startsWith('ey')) {
-                localStorage.setItem('token', result);
-                const payload = JSON.parse(atob(result.split('.')[1]));
-                localStorage.setItem('accessLevel', payload.accessLevel);
-                localStorage.setItem('username', username);
-                showMsg(msg, 'Login successful! Redirecting...', 'success');
-                setTimeout(() => window.location.href = '/dashboard.html', 1000);
-            } else {
-                showMsg(msg, result, 'error');
-            }
-        } catch (e) {
-            showMsg(msg, 'Connection error. Is the server running?', 'error');
-        }
-    }
-
-    async function register() {
-        const username = document.getElementById('regUsername').value.trim();
-        const password1 = document.getElementById('regPassword1').value.trim();
-        const password2 = document.getElementById('regPassword2').value.trim();
-        const securityQuestion1 = document.getElementById('regSecurityQuestion1').value;
-        const securityAnswer1 = document.getElementById('regSecurityAnswer1').value.trim();
-        const securityQuestion2 = document.getElementById('regSecurityQuestion2').value;
-        const securityAnswer2 = document.getElementById('regSecurityAnswer2').value.trim();
-        const msg = document.getElementById('registerMsg');
-
-        if (!username || !password1 || !password2 || !securityQuestion1 || !securityAnswer1 || !securityQuestion2 || !securityAnswer2) {
-            showMsg(msg, 'Please fill in all fields including both security questions', 'error'); return;
-        }
-
-        try {
-            const res = await fetch('/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password1, password2, securityQuestion1, securityAnswer1, securityQuestion2, securityAnswer2 })
-            });
-            const result = await res.text();
-            if (result.includes('successfully')) {
-                showMsg(msg, result + ' — You can now login!', 'success');
-            } else {
-                showMsg(msg, result, 'error');
-            }
-        } catch (e) {
-            showMsg(msg, 'Connection error. Is the server running?', 'error');
-        }
-    }
-
-    async function loadQuestion() {
-        const username = document.getElementById('forgotUsername').value.trim();
-        const msg = document.getElementById('forgotMsg');
-        if (!username) { showMsg(msg, 'Enter your username first', 'error'); return; }
-
-        try {
-            const res = await fetch('/auth/security-questions?username=' + encodeURIComponent(username));
-            if (!res.ok) {
-                showMsg(msg, '❌ No account found with that username.', 'error');
-                document.getElementById('questionBox').classList.add('hidden');
-                return;
-            }
-
-            const data = await res.json();
-            const select = document.getElementById('recoveryQuestion');
-            select.innerHTML = `
-                <option value="securityQuestion1">${data.securityQuestion1 || 'Not set'}</option>
-                <option value="securityQuestion2">${data.securityQuestion2 || 'Not set'}</option>
-            `;
-            document.getElementById('questionBox').classList.remove('hidden');
-            msg.className = 'msg';
-        } catch (e) {
-            showMsg(msg, 'Connection error', 'error');
-        }
-    }
-
-    async function recoverByQuestion() {
-        const username = document.getElementById('forgotUsername').value.trim();
-        const questionKey = document.getElementById('recoveryQuestion').value;
-        const answer = document.getElementById('forgotAnswer').value.trim();
-        const newPassword = document.getElementById('forgotNewPassword').value.trim();
-        const msg = document.getElementById('forgotMsg');
-
-        if (!username || !questionKey || !answer || !newPassword) {
-            showMsg(msg, 'Please complete all recovery fields', 'error'); return;
-        }
-
-        try {
-            const res = await fetch('/auth/recover-by-question', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, questionKey, securityAnswer: answer, newPassword })
-            });
-            const result = await res.text();
-            if (result.includes('successful')) {
-                showMsg(msg, '✅ ' + result, 'success');
-                document.getElementById('questionBox').classList.add('hidden');
-                setTimeout(() => showTab('login'), 2500);
-            } else {
-                showMsg(msg, '❌ ' + result, 'error');
-            }
-        } catch (e) {
-            showMsg(msg, 'Connection error', 'error');
-        }
-    }
-
-    function showMsg(el, text, type) {
-        el.textContent = text;
-        el.className = 'msg ' + type;
-    }
-</script>
+<script src="/app.js" defer></script>
 </body>
 </html>
 
