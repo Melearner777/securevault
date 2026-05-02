@@ -19,13 +19,13 @@ Even if one credential is compromised, the other level remains protected.
 
 ## Security Features
 
-- ✅ **Dual-level authentication** — two separate passwords grant different access levels
-- ✅ **AES-256 file encryption** — Level 2 files are encrypted at rest
-- ✅ **JWT authentication** — stateless, secure session management
-- ✅ **BCrypt password hashing** — passwords never stored in plain text
-- ✅ **Brute-force protection** — account lock after failed attempts
-- ✅ **Segregated file storage** — `/storage/normal/` and `/storage/secure/`
-- ✅ **Security logging** — all actions tracked
+-  **Dual-level authentication** — two separate passwords grant different access levels
+-  **AES-256 file encryption** — Level 2 files are encrypted at rest
+-  **JWT authentication** — stateless, secure session management
+-  **BCrypt password hashing** — passwords never stored in plain text
+-  **Brute-force protection** — account lock after failed attempts
+-  **Segregated file storage** — `/storage/normal/` and `/storage/secure/`
+-  **Security logging** — all actions tracked
 
 ---
 
